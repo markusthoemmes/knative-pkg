@@ -42,10 +42,11 @@ import (
 )
 
 const (
-	knativeContainer = "knativeContainer"
-	userContainer    = "userContainer"
-	noLogTimeout     = 100 * time.Millisecond
-	testKey          = "horror-movie-2020"
+	knativeContainer  = "knativeContainer"
+	userContainer     = "userContainer"
+	noLogTimeout      = 100 * time.Millisecond
+	waitForLogTimeout = 300 * time.Millisecond
+	testKey           = "horror-movie-2020"
 	// default test controller line with all matchin keys and attributes
 	testLine = `{"severity":"debug","timestamp":"2020-10-20T18:42:28.553Z","logger":"controller.revision-controller.knative.dev-serving-pkg-reconciler-revision.Reconciler","caller":"controller/controller.go:397","message":"Adding to queue default/s2-nhjv6 (depth: 1)","commit":"4411bf3","knative.dev/pod":"controller-f95b977c-4wlh4","knative.dev/controller":"revision-controller","knative.dev/key":"default/horror-movie-2020", "error":"el-otoño-eternal" }`
 
@@ -168,7 +169,7 @@ func TestFailToStartStream(t *testing.T) {
 	}
 
 	select {
-	case <-time.After(noLogTimeout):
+	case <-time.After(waitForLogTimeout):
 		t.Error("Timed-out waiting for the logs")
 	case <-logFuncInvoked:
 	}
@@ -183,7 +184,7 @@ OUTER:
 		// each need to be matched with exactly one pattern from
 		// patterns...
 		select {
-		case <-time.After(noLogTimeout):
+		case <-time.After(waitForLogTimeout):
 			t.Error("Timed out: log message wasn't received")
 		case logLine := <-logFuncInvoked:
 
@@ -290,7 +291,7 @@ func TestNamespaceStream(t *testing.T) {
 	}
 
 	select {
-	case <-time.After(noLogTimeout):
+	case <-time.After(waitForLogTimeout):
 		t.Error("Timed out: log message wasn't received")
 	case <-logFuncInvoked:
 	}
